@@ -25,12 +25,15 @@ knitr::opts_chunk$set(fig.width=10, fig.height=6, fig.align = "center")
 ```
 
 ```{r packages, warning = FALSE, message = FALSE}
+
 library(scales)
+library(lares)
 library(tidyverse)
 library(modelsummary)
 library(ggthemes)
 library(gridExtra)
 library(broom)
+
 ```
 
 ```{r, include=FALSE}
@@ -76,7 +79,6 @@ num <- ames %>%
 head(num)
 ```
 
-
 # EDA
 
 ## Exploring the univariate distribution of the response variable Sale price.
@@ -99,10 +101,9 @@ ames %>%
     theme_replace()+
     themes()
 ```
-                  
--   As we look at the mean and median, `median < mean` so we can say that our variable is right skewed. But it is not much skewed so we can consider it as normally distributed because in real world we never get perfectly distributed data.        
--   The reason behind this skewness can be outliers present in the response variable..
 
+-   As we look at the mean and median, `median < mean` so we can say that our variable is right skewed. But it is not much skewed so we can consider it as normally distributed because in real world we never get perfectly distributed data.\
+-   The reason behind this skewness can be outliers present in the response variable..
 
 ## Find outlier(s) in your original response variable
 
@@ -118,9 +119,23 @@ ames %>%
 
 ```
 
-- We have found the we have some outliers present in the data which can be reason for the skewness.
+-   We have found the we have some outliers present in the data which can be reason for the skewness.
 
-# Bivariate analysis
+# Bivariate analysis     
+
+- To do the bivariate analysis we need to find the features which are highly correlated to the response variable that is house price.
+
+## Heat Map to find high corrlated features.
+
+```{r}
+
+corr_var(num, # name of dataset
+  Sale_Price, # name of variable to focus on
+  top = 5 # display top 5 correlations
+) 
+  
+```
+
 
 ## Relation between Sale Price and Total Basement size
 
@@ -150,39 +165,17 @@ bsmt2 <- ames %>%
       scale_y_continuous(labels  = label_number(scale = 1e-05, prefix = "$", suffix = "hk", accuracy = 1)) +
   themes()
 
-grid.arrange(bsmt1, bsmt2, ncol=2)
+grid.arrange(bsmt2, bsmt1, ncol=2)
 
 ```
 
-```{r}
+-   Here, we can say that we have some positive relation between sale price and total basement size.
 
-Bsmt_after = cor(data1['Total_Bsmt_SF'], data1['Sale_Price'])
+    -   But we can see there are some outliers in total basement size, which leads to the less weak relation.
 
-Bsmt_before = cor(ames['Total_Bsmt_SF'], ames['Sale_Price'])
+-   The Correlation coefficient before removing outliers is `r cor(data1['Total_Bsmt_SF'], data1['Sale_Price'])`
 
-sprintf("Correlation coeffeicient before removing outliers: %f", Bsmt_before)
-sprintf("Correlation coeffeicient After removing outliers: %f", Bsmt_after)
-
-```
-
-- Here, we can say that we have some positive relation between sale price and total basement size.
-
-- It's correlation coefficient is : `r cor(data1['Total_Bsmt_SF'], data1['Sale_Price'])`, which is showing moderate relation.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+-   The Correlation coefficient after removing outliers is `r cor(ames['Total_Bsmt_SF'], ames['Sale_Price'])`
 
 
 
